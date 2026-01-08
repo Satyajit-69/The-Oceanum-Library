@@ -1,19 +1,24 @@
-// import './App.css'
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import RagChat from "./pages/RagChat";
+import VoiceMemo from "./pages/VoiceMemo";
+import NotFound from "./pages/NotFound";
+import Navbar from "./components/Navbar";
+import About from "./pages/About";
+import Footer from "./components/Footer";
 
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md">
-        <h1 className="text-3xl font-bold text-indigo-600 mb-4">
-          Hello 👋 Welcome to the Oceanum Library 📚
-        </h1>
-
-        <p className="text-gray-600">
-          Upload a PDF and ask anything about it.
-        </p>
-      </div>
-    </div>
-  )
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/rag" element={<RagChat />} />
+        <Route path="/voice-memo" element={<VoiceMemo />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer />
+    </>
+  );
 }
-
-export default App

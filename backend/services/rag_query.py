@@ -7,7 +7,6 @@ from langchain_community.vectorstores import Chroma
 
 VECTOR_DB_DIR = "vector_db"
 
-# ✅ SAME embedding model as ingestion
 embeddings = GoogleGenerativeAIEmbeddings(
     model="models/embedding-001",
     google_api_key=os.getenv("GOOGLE_API_KEY")
@@ -17,7 +16,7 @@ def answer_from_pdf(question: str, pdf_id: str) -> str:
     vectordb = Chroma(
         persist_directory=VECTOR_DB_DIR,
         collection_name=pdf_id,
-        embedding_function=embeddings  # 🔥 THIS FIXES THE BUG
+        embedding_function=embeddings 
     )
 
     docs = vectordb.similarity_search(question, k=4)
