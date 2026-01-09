@@ -55,12 +55,12 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1 text-muted">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                className={`relative px-4 py-2 rounded-lg text-muted  transition-all duration-300 ${
                   isActive(link.path)
                     ? "text-blue-600"
                     : "text-gray-600 hover:text-blue-600"
