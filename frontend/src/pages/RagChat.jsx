@@ -33,7 +33,7 @@ export default function RagChat() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 shadow-lg">
+      <div className="bg-gradient-to-r from-black via-purple-600 to-black shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-center gap-3">
             <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl shadow-xl">
@@ -51,7 +51,7 @@ export default function RagChat() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-8 h-[calc(100vh-200px)]">
+        <div className="grid lg:grid-cols-2 gap-8 ">
           {/* Upload Section */}
           <UploadBox
             onFileUpload={handleFileUpload}

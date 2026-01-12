@@ -52,7 +52,7 @@ export default function ChatBox() {
   return (
     <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-lg">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+      <div className="bg-gradient-to-r from-indigo-500 to-blue-600 px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
             <Bot className="text-white" size={22} />
