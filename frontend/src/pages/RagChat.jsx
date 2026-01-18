@@ -2,32 +2,57 @@ import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import UploadBox from '../components/UploadBox';
 import ChatBox from '../components/ChatBox';
+import PdfSelector from '../components/PdfSelector';
+import { API_BASE_URL } from '../config/api';
 
 export default function RagChat() {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [pdfId, setPdfId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleFileUpload = (file) => {
-    setUploadedFiles(prev => [...prev, file]);
+  const handlePdfSelect = (selectedPdfId) => {
+    setPdfId(selectedPdfId);
+    setMessages([]); // Clear messages when switching PDFs
   };
 
-  const handleRemoveFile = (index) => {
-    setUploadedFiles(prev => prev.filter((_, idx) => idx !== index));
-  };
+  const handleSendMessage = async (message) => {
+    if (!pdfId) {
+      alert('⚠️ Please select a PDF first!');
+      return;
+    }
 
-  const handleSendMessage = (message) => {
     setMessages(prev => [...prev, { role: 'user', content: message }]);
     setIsProcessing(true);
     
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pdf_id: pdfId,
+          question: message
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to get response');
+
+      const data = await response.json();
+
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'This is a simulated response. In a real implementation, this would query your uploaded documents and provide AI-powered insights based on their content.'
+        content: data.answer || 'Sorry, I could not process your request.'
       }]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: '❌ Error: Could not get a response. Please try again.'
+      }]);
+    } finally {
       setIsProcessing(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -40,32 +65,59 @@ export default function RagChat() {
               <Sparkles className="w-7 h-7 text-white" />
             </div>
             <div className="text-center">
-              <h1 className="text-4xl font-bold text-white drop-shadow-lg">
-                LEXA
-              </h1>
+              <h1 className="text-4xl font-bold text-white drop-shadow-lg">LEXA</h1>
             </div>
           </div>
-          <p className="text-sm text-white/90 mt-3 font-medium text-center">AI-Powered Document Intelligence</p>
+          <p className="text-sm text-white/90 mt-3 font-medium text-center">
+            AI-Powered Document Intelligence
+          </p>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-8 ">
-          {/* Upload Section */}
-          <UploadBox
-            onFileUpload={handleFileUpload}
-            uploadedFiles={uploadedFiles}
-            onRemoveFile={handleRemoveFile}
-          />
+        {!pdfId ? (
+          // Show Upload & Selector when no PDF selected
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* PDF Selector */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <PdfSelector selectedPdfId={pdfId} onSelectPdf={handlePdfSelect} />
+            </div>
+            
+            {/* Upload Section */}
+            <UploadBox setPdfId={setPdfId} />
+          </div>
+        ) : (
+          // Show ChatBox when PDF is selected
+          <div className="max-w-4xl mx-auto">
+            {/* PDF Info & Change Button */}
+            <div className="bg-white rounded-2xl p-4 mb-6 shadow-lg border border-gray-200 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                  <Sparkles className="text-white" size={20} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Chatting with</p>
+                  <p className="font-semibold text-gray-800">Selected Document</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPdfId(null)}
+                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all font-medium"
+              >
+                Change PDF
+              </button>
+            </div>
 
-          {/* Chat Section */}
-          <ChatBox
-            messages={messages}
-            onSendMessage={handleSendMessage}
-            isProcessing={isProcessing}
-          />
-        </div>
+            {/* Chat Box */}
+            <ChatBox
+              messages={messages}
+              onSendMessage={handleSendMessage}
+              isProcessing={isProcessing}
+              pdfId={pdfId}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
