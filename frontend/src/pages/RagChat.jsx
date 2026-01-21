@@ -7,11 +7,13 @@ import { API_BASE_URL } from '../config/api';
 
 export default function RagChat() {
   const [pdfId, setPdfId] = useState(null);
+  const [pdfName, setPdfName] = useState('');
   const [messages, setMessages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handlePdfSelect = (selectedPdfId) => {
+  const handlePdfSelect = (selectedPdfId, selectedPdfName) => {
     setPdfId(selectedPdfId);
+    setPdfName(selectedPdfName);
     setMessages([]); // Clear messages when switching PDFs
   };
 
@@ -85,7 +87,7 @@ export default function RagChat() {
             </div>
             
             {/* Upload Section */}
-            <UploadBox setPdfId={setPdfId} />
+            <UploadBox setPdfId={setPdfId} setPdfName={setPdfName} />
           </div>
         ) : (
           // Show ChatBox when PDF is selected
@@ -98,11 +100,16 @@ export default function RagChat() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Chatting with</p>
-                  <p className="font-semibold text-gray-800">Selected Document</p>
+                  <p className="font-semibold text-gray-800 truncate max-w-md" title={pdfName}>
+                    {pdfName || 'Selected Document'}
+                  </p>
                 </div>
               </div>
               <button
-                onClick={() => setPdfId(null)}
+                onClick={() => {
+                  setPdfId(null);
+                  setPdfName('');
+                }}
                 className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all font-medium"
               >
                 Change PDF
