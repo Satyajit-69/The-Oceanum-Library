@@ -6,7 +6,7 @@ from routes.chat import router as chat_router
 
 app = FastAPI()
 
-# ✅ CORS (for frontend localhost) - More permissive configuration
+# ✅ CORS (for frontend localhost)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

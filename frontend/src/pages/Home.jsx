@@ -156,19 +156,15 @@ export default function Home() {
               <a href="/about" className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 shadow-xl hover:shadow-2xl">
                 Get Started Free
               </a>
-              <button className="px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-300 text-gray-700 rounded-full font-semibold text-lg hover:bg-white transition-all duration-300 shadow-lg">
+              <a href="/learnmore" className="px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-300 text-gray-700 rounded-full font-semibold text-lg hover:bg-white transition-all duration-300 shadow-lg">
                 Learn More
-              </button>
+              </a>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-8 pb-8">
-          <div className="max-w-7xl mx-auto text-center text-gray-600 text-sm border-t border-gray-300 pt-8">
-            <p>© 2026 Oceanum AI Library. Powered by Neural Intelligence.</p>
-          </div>
-        </div>
+        
       </div>
 
       <style>

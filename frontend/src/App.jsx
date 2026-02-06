@@ -6,7 +6,7 @@ import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import About from "./pages/About";
 import Footer from "./components/Footer";
-
+import LearnMore from "./pages/LearnMore";
 export default function App() {
   return (
     <>
@@ -16,6 +16,7 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/rag" element={<RagChat />} />
         <Route path="/voice-memo" element={<VoiceMemo />} />
+        <Route path="/learnmore" element={<LearnMore />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
