@@ -7,7 +7,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,7 +75,7 @@ export default function Navbar() {
                   to={link.path}
                   className={`relative px-5 py-2.5 rounded-xl transition-all duration-300 group ${
                     isActive(link.path)
-                      ? "text-white "
+                      ? "text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:text-black"
                       : "text-gray-700 hover:text-black font-medium"
                   }`}
                   style={{
@@ -85,7 +85,6 @@ export default function Navbar() {
                   {/* Active Indicator */}
                   {isActive(link.path) && (
                     <>
-                      <div className="absolute inset-0 bg-blue-400 rounded-xl"></div>
                       {/* <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 rounded-full"></div> */}
                     </>
                   )}

@@ -21,7 +21,7 @@ def ingest_pdf(pdf_path: str, collection_name: str):
     
     # Initialize embeddings inside function
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
+        model="models/text-embedding-004",
         google_api_key=api_key
     )
     
@@ -71,7 +71,7 @@ def ingest_pdf(pdf_path: str, collection_name: str):
                 for i in range(0, len(text), 1000):
                     chunk_text = text[i:i+1000]
                     if chunk_text.strip():
-                        from langchain.schema import Document
+                        from langchain.schema import Document # type: ignore
                         chunks.append(Document(
                             page_content=chunk_text,
                             metadata=doc.metadata
@@ -87,8 +87,6 @@ def ingest_pdf(pdf_path: str, collection_name: str):
     
     print(f"✅ {len(chunks)} non-empty chunks ready for embedding")
     
-    # Debug: Show first chunk
-    print(f"📝 First chunk preview: {chunks[0].page_content[:150]}...")
 
     # Create vector store
     print("🔄 Creating embeddings and vector store...")
