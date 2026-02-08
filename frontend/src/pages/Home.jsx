@@ -1,7 +1,6 @@
 import FeatureCard from "../components/FeatureCard";
 
 export default function Home() {
-
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Animated Grid Background */}
@@ -18,14 +17,14 @@ export default function Home() {
 
       {/* Animated Wave Background */}
       <div className="fixed inset-0 z-0 opacity-40">
-        <svg 
-          width="100%" 
-          height="100%" 
-          viewBox="0 0 1440 690" 
-          xmlns="http://www.w3.org/2000/svg" 
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 1440 690"
+          xmlns="http://www.w3.org/2000/svg"
           className="transition duration-300 ease-in-out"
           preserveAspectRatio="none"
-          style={{ height: '100vh' }}
+          style={{ height: "100vh" }}
         >
           <style>
             {`
@@ -48,11 +47,11 @@ export default function Home() {
               <stop offset="100%" stopColor="#a78bfa"></stop>
             </linearGradient>
           </defs>
-          <path 
-            d="M 0,700 L 0,131 C 81.68,111.29 163.36,91.57 301,84 C 438.64,76.43 632.25,81 776,78 C 919.75,75 1013.64,64.43 1116,72 C 1218.36,79.57 1329.18,105.29 1440,131 L 1440,700 L 0,700 Z" 
-            stroke="none" 
-            fill="url(#gradient)" 
-            fillOpacity="0.3" 
+          <path
+            d="M 0,700 L 0,131 C 81.68,111.29 163.36,91.57 301,84 C 438.64,76.43 632.25,81 776,78 C 919.75,75 1013.64,64.43 1116,72 C 1218.36,79.57 1329.18,105.29 1440,131 L 1440,700 L 0,700 Z"
+            stroke="none"
+            fill="url(#gradient)"
+            fillOpacity="0.3"
             className="path-0"
           ></path>
         </svg>
@@ -75,11 +74,11 @@ export default function Home() {
             <h1 className="text-7xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 drop-shadow-lg leading-tight">
               The Oceanum
             </h1>
-            
+
             <div className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent drop-shadow-sm">
               AI Library 🐬
             </div>
-            
+
             <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
               Dive deep into the future of artificial intelligence
               <br />
@@ -91,16 +90,28 @@ export default function Home() {
             {/* Stats */}
             <div className="flex flex-wrap justify-center gap-8 pt-8">
               <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-gray-200">
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">3+</div>
-                <div className="text-sm text-gray-600 font-medium">AI Features</div>
+                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  3+
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  AI Features
+                </div>
               </div>
               <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-gray-200">
-                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">∞</div>
-                <div className="text-sm text-gray-600 font-medium">Possibilities</div>
+                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  ∞
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  Possibilities
+                </div>
               </div>
               <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-gray-200">
-                <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent">24/7</div>
-                <div className="text-sm text-gray-600 font-medium">Available</div>
+                <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent">
+                  24/7
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  Available
+                </div>
               </div>
             </div>
           </div>
@@ -108,12 +119,12 @@ export default function Home() {
 
         {/* Features Grid */}
         <div className="px-8 pb-20">
-          <div className="grid gap-8 max-w-7xl mx-auto">
+          <div className="grid gap-8 max-w-full mx-auto">
             <FeatureCard
               title="RAG Intelligence"
               desc="Experience next-generation retrieval-augmented generation with quantum-enhanced semantic search capabilities. Upload your documents and chat with them using advanced AI. Our sophisticated natural language processing algorithms understand context and deliver precise answers from your document library. Perfect for research, legal documents, technical manuals, and knowledge management systems."
               route="/rag"
-              imageUrl="/photo1.png"
+              imageUrl="/innovation-animate.svg"
               layout="left"
             />
 
@@ -121,15 +132,15 @@ export default function Home() {
               title="Voice AI Assistant"
               desc="Advanced conversational AI with emotion recognition and ultra-low latency voice processing. Natural voice interactions powered by cutting-edge speech technology. Our voice assistant understands context, responds naturally, and adapts to your speaking style. Features real-time transcription, multi-language support, and seamless integration with your workflow for hands-free productivity."
               route="/voice-memo"
-              imageUrl="/photo2.png"
+              imageUrl="/voice-chat-animate.svg"
               layout="right"
             />
-            
+
             <FeatureCard
               title="Upload Documents"
               desc="Support for RTF files up to 10MB with our intuitive drag-and-drop interface. Easily upload and manage your documents with batch processing capabilities. Our intelligent file processing system extracts text, maintains formatting, and indexes content for instant retrieval. Process multiple files simultaneously for efficient workflow management. Secure cloud storage with encryption ensures your documents remain private and protected."
               route="/upload"
-              imageUrl="/photo3.png"
+              imageUrl="/upload-animate.svg"
               layout="left"
             />
 
@@ -137,7 +148,22 @@ export default function Home() {
               title="AI Playground"
               desc="Experiment with multiple AI models in a sandbox environment. Test, compare, and fine-tune various AI capabilities in real-time with interactive controls and comprehensive testing tools. Our playground features state-of-the-art language models, image generation, code completion, and more. Perfect for developers, researchers, and AI enthusiasts who want to explore the cutting edge of artificial intelligence without complex setup."
               route="/playground"
-              imageUrl="/photo4.png"
+              imageUrl="/playground.svg"
+              layout="right"
+            />
+            <FeatureCard
+              title="CodePilot Agent"
+              desc="An intelligent Cursor-style coding agent that converts natural language into real, structured code and files. CodePilot understands developer intent, generates complete implementations, and safely writes files with explicit user confirmation. Built for reliable AI-assisted development with full transparency and control."
+              route="/codepilot"
+              imageUrl="/code-agent-animate.svg"
+              layout="left"
+            />
+
+            <FeatureCard
+              title="DeepThink Engine"
+              desc="A transparent AI reasoning engine that analyzes problems step by step before responding. DeepThink validates logic, exposes structured thinking, and delivers accurate, explainable answers. Perfect for debugging, research, and complex decision-making where understanding the reasoning matters as much as the result."
+              route="/deepthink"
+              imageUrl="/thinking-animate.svg"
               layout="right"
             />
           </div>
@@ -150,13 +176,20 @@ export default function Home() {
               Ready to dive in?
             </h2>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Join the future of AI-powered solutions and unlock unlimited potential
+              Join the future of AI-powered solutions and unlock unlimited
+              potential
             </p>
             <div className="flex flex-wrap gap-4 justify-center pt-4">
-              <a href="/about" className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 shadow-xl hover:shadow-2xl">
+              <a
+                href="/about"
+                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 shadow-xl hover:shadow-2xl"
+              >
                 Get Started Free
               </a>
-              <a href="/learnmore" className="px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-300 text-gray-700 rounded-full font-semibold text-lg hover:bg-white transition-all duration-300 shadow-lg">
+              <a
+                href="/learnmore"
+                className="px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-300 text-gray-700 rounded-full font-semibold text-lg hover:bg-white transition-all duration-300 shadow-lg"
+              >
                 Learn More
               </a>
             </div>
@@ -164,7 +197,6 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        
       </div>
 
       <style>

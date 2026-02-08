@@ -1,73 +1,109 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { useState } from "react";
 
-export default function FeatureCard({ 
-  title, 
-  desc, 
-  route, 
-  videoUrl, 
+export default function FeatureCard({
+  title,
+  desc,
+  route,
+  videoUrl,
   imageUrl,
-  layout = "left" // "left" or "right" - determines video/image position
+  layout = "left", // "left" or "right" - determines media position
 }) {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const MediaSection = () => (
-    <div className="relative w-full lg:w-1/2 h-64 lg:h-full overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-purple-600">
+    <div className="relative w-full lg:w-1/2 h-[300px] lg:h-full overflow-hidden">
       {videoUrl ? (
-        <div className="relative w-full h-full group">
+        <div className="relative w-full h-full group/video">
           <video
-            className="w-full h-full object-cover"
-            autoPlay
+            src={videoUrl}
+            className="w-full h-full object-cover transition-transform duration-700"
+            autoPlay={isVideoPlaying}
             loop
             muted
             playsInline
-          >
-            <source src={videoUrl} type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-500 flex items-center justify-center">
-            <Play className="w-16 h-16 text-white opacity-70 group-hover:opacity-0 group-hover:scale-150 transition-all duration-500" />
-          </div>
+          />
+          {!isVideoPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px] transition-opacity duration-300 group-hover/video:opacity-0">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsVideoPlaying(true);
+                }}
+                className="flex items-center justify-center w-20 h-20 rounded-full bg-white/95 shadow-2xl hover:bg-white hover:scale-110 transition-all duration-300"
+              >
+                <Play className="w-8 h-8 text-blue-600 ml-1" fill="currentColor" />
+              </button>
+            </div>
+          )}
         </div>
       ) : imageUrl ? (
-        <img 
-          src={imageUrl} 
+        <img
+          src={imageUrl}
           alt={title}
-          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+          className="w-full h-full object-cover transition-transform duration-700"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="text-white text-6xl font-bold opacity-20">{title[0]}</div>
+        <div className="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+          <span className="text-8xl font-bold text-white/90">{title[0]}</span>
         </div>
       )}
+
       
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
     </div>
   );
 
   const ContentSection = () => (
-    <div className="w-full lg:w-1/2 p-8 flex flex-col justify-center">
-      <h2 className="text-3xl font-bold mb-4 text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-        {title}
-      </h2>
-      <p className="text-gray-600 leading-relaxed mb-6 text-lg">
-        {desc}
-      </p>
-      
-      <div className="flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-4 transition-all duration-300">
-        <span>Explore Now</span>
-        <ArrowRight 
-          className={`w-5 h-5 transform transition-transform duration-300 ${
-            isHovered ? 'translate-x-2' : ''
-          }`} 
-        />
+    <div className="relative w-full lg:w-1/2 p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-gradient-to-br from-slate-50 to-white">
+      {/* Content Container */}
+      <div className="space-y-6 relative z-10">
+        {/* Category Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold w-fit">
+          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+          Featured
+        </div>
+
+        {/* Title */}
+        <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
+          {title}
+        </h2>
+
+        {/* Description */}
+        <p className="text-lg lg:text-xl text-gray-600 leading-relaxed max-w-xl">
+          {desc}
+        </p>
+
+        {/* CTA Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(route);
+          }}
+          className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:gap-4 w-fit"
+        >
+          <span>Explore Now</span>
+          <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+        </button>
+
+        {/* Feature Highlights */}
+        <div className="flex gap-6 pt-4 text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <span>Live Demo</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <span>Interactive</span>
+          </div>
+        </div>
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-4 right-4 w-20 h-20 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
-      <div className="absolute bottom-4 left-4 w-16 h-16 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all duration-500"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl -z-0 group-hover:bg-blue-300/30 transition-colors duration-700" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-200/20 rounded-full blur-3xl -z-0 group-hover:bg-purple-300/30 transition-colors duration-700" />
     </div>
   );
 
@@ -76,11 +112,12 @@ export default function FeatureCard({
       onClick={() => navigate(route)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative cursor-pointer border-2 border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-400 transition-all duration-500 bg-white hover:scale-[1.02] min-h-[400px] flex flex-col lg:flex-row"
+      className="group relative cursor-pointer rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white min-h-[500px] lg:min-h-[600px] flex flex-col lg:flex-row"
     >
-      {/* Animated Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 via-purple-50/0 to-blue-50/0 group-hover:from-blue-50/50 group-hover:via-purple-50/50 group-hover:to-blue-50/50 transition-all duration-700"></div>
-      
+      {/* Animated Border Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+      <div className="absolute inset-[3px] bg-white rounded-3xl" />
+
       {/* Content Layout Based on Position */}
       <div className="relative z-10 w-full h-full flex flex-col lg:flex-row">
         {layout === "left" ? (
@@ -96,10 +133,8 @@ export default function FeatureCard({
         )}
       </div>
 
-      {/* Hover Glow Effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 -z-10"></div>
+      {/* Hover Glow Effect
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 via-purple-400/0 to-pink-400/0 group-hover:from-blue-400/5 group-hover:via-purple-400/5 group-hover:to-pink-400/5 transition-all duration-700 pointer-events-none rounded-3xl" /> */}
     </div>
   );
 }
-
-
