@@ -15,7 +15,7 @@ def ingest_pdf(pdf_path: str, collection_name: str):
         raise ValueError("GOOGLE_API_KEY missing")
 
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004",
+        model="gemini-embedding-001",
         google_api_key=api_key
     )
 

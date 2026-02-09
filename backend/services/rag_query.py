@@ -11,7 +11,7 @@ from langchain_community.vectorstores import Chroma
 VECTOR_DB_DIR = "vector_db"
 
 embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004",
+    model="gemini-embedding-001",
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
