@@ -1,36 +1,28 @@
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai # type: ignore
+from google import genai
 
-# Load environment variables
-load_dotenv(override=True)
+load_dotenv()
 
-# Configure Gemini
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Fail fast (production-safe)
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    raise RuntimeError("GOOGLE_API_KEY is not set")
 
-# Load model
-model = genai.GenerativeModel("gemini-2.5-flash")
+# Initialize client (once)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
-def gemini_agent(user_input):
+def gemini_agent(user_input: str) -> str:
     prompt = f"""
-Your name is MEEKU .You are a voice agent developed by Satyajit Sahoo.
-Understand the user's intent carefully and respond briefly and clearly.
-Make the voice loud and clear and sweet .
+Your name is MEEKU. You are a voice agent developed by Satyajit Sahoo.
+Respond briefly, clearly, and politely.
 
 User: {user_input}
 Assistant:
 """
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
     return response.text.strip()
-
-
-if __name__ == "__main__":
-    while True:
-        user_input = input("You: ")
-        
-        if user_input.lower() in ["exit", "quit", "bye"]:
-            print("Assistant: Goodbye 👋")
-            break
-        
-        reply = gemini_agent(user_input)
-        print("Assistant:", reply)
