@@ -1,0 +1,6 @@
+# Ignore sensitive/generated files
+backend/services/agnet.json
+__pycache__/
+*.pyc
+.env
+.DS_Store
