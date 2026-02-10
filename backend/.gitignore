@@ -1,2 +1,4 @@
+# Agent config (secrets)
+agent.json
+backend/services/agent.json
 .env
-agnet.json
