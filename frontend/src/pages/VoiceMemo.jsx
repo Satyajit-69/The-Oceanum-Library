@@ -74,46 +74,39 @@ export default function VoiceMemo() {
 
   // 🤖 Send Audio to Backend
   const sendToAI = async (audioBlob) => {
-    setIsProcessing(true);
+  setIsProcessing(true);
 
-    try {
-      const base64Audio = await blobToBase64(audioBlob);
+  try {
+    const base64Audio = await blobToBase64(audioBlob);
 
-      console.log("Sending audio to backend...");
+    const response = await fetch(`${API_BASE_URL}/api/voice_chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        audio: base64Audio,
+      }),
+    });
 
-      const response = await fetch(`${API_BASE_URL}/api/voice_chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          audio: base64Audio,
-        }),
-      });
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Backend response:", data);
-
-      if (!data.success) {
-        throw new Error(data.error || "Backend error");
-      }
-
-      setTranscription(data.transcription);
-      setAiResponse(data.response);
-      setIsProcessing(false);
-
-      speakResponse(data.response);
-
-    } catch (error) {
-      console.error("AI Error:", error);
-      setIsProcessing(false);
-      setAiResponse("Something went wrong.");
+    if (!data.success) {
+      throw new Error(data.error || "Backend error");
     }
-  };
+
+    setAiResponse(data.response);
+    setIsProcessing(false);
+
+    speakResponse(data.response);
+
+  } catch (error) {
+    console.error("AI Error:", error);
+    setIsProcessing(false);
+    setAiResponse("Something went wrong.");
+  }
+};
+
 
   const blobToBase64 = (blob) => {
     return new Promise((resolve, reject) => {
