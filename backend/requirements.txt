@@ -1,4 +1,15 @@
 fastapi
 uvicorn
 python-dotenv
+
 google-genai
+
+langchain
+langchain-community
+langchain-core
+langgraph
+
+chromadb
+
+pydantic
+requests
