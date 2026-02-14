@@ -1,212 +1,234 @@
 import { useEffect, useRef, useState } from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, Square, Trash2, Play, Pause, Sparkles } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
-const EXIT_KEYWORDS = ["exit", "quit", "stop", "bye"];
+export default function VoiceMemo() {
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioURL, setAudioURL] = useState(null);
+  const [recordTime, setRecordTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [aiResponse, setAiResponse] = useState("");
+  const [transcription, setTranscription] = useState("");
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
-export default function VoiceAssistant() {
-  const [listening, setListening] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const [history, setHistory] = useState([]);
-  const [isSupported, setIsSupported] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [callActive, setCallActive] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioRef = useRef(null);
+  const timerRef = useRef(null);
 
-  const recognitionRef = useRef(null);
-
-  // Inject wave animation styles
+  //  Timer
   useEffect(() => {
-    const style = document.createElement("style");
-    style.textContent = `
-      @keyframes wave {
-        0% { transform: scale(1); opacity: 0.8; }
-        100% { transform: scale(2.5); opacity: 0; }
-      }
-      .wave-animation {
-        animation: wave 2s ease-out infinite;
-      }
-      .wave-animation:nth-child(2) { animation-delay: 0.3s; }
-      .wave-animation:nth-child(3) { animation-delay: 0.6s; }
-      .wave-animation:nth-child(4) { animation-delay: 0.9s; }
-    `;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
-
-  const API_URL = "http://localhost:8000/voice/chat";
-
-  // Setup Speech Recognition
-  useEffect(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setIsSupported(false);
-      return;
+    if (isRecording) {
+      timerRef.current = setInterval(() => {
+        setRecordTime((prev) => prev + 1);
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current);
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    return () => clearInterval(timerRef.current);
+  }, [isRecording]);
 
-    recognition.onresult = async (event) => {
-      const result = event.results[0][0].transcript.toLowerCase();
-      setTranscript(result);
+  const formatTime = (seconds) => {
+    const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const sec = String(seconds % 60).padStart(2, "0");
+    return `${min}:${sec}`;
+  };
 
-      // 🔴 Voice exit
-      if (EXIT_KEYWORDS.some(word => result.includes(word))) {
-        stopListening();
-        speak("Goodbye 👋");
-        return;
-      }
-
-      setHistory(prev => [
-        {
-          type: "user",
-          text: result,
-          timestamp: new Date().toLocaleTimeString(),
-        },
-        ...prev,
-      ]);
-
-      await sendToBackend(result);
-    };
-
-    recognition.onerror = () => setListening(false);
-    recognition.onend = () => setListening(false);
-
-    recognitionRef.current = recognition;
-  }, []);
-
-  const sendToBackend = async (userInput) => {
-    setIsLoading(true);
+  // 🎙 Start Recording
+  const startRecording = async () => {
     try {
-      const res = await fetch(API_URL, {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+
+      recorder.ondataavailable = (event) => {
+        chunks.push(event.data);
+      };
+
+      recorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        const url = URL.createObjectURL(blob);
+        setAudioURL(url);
+
+        await sendToAI(blob);
+      };
+
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+
+      setRecordTime(0);
+      setIsRecording(true);
+      setAiResponse("");
+      setTranscription("");
+    } catch (error) {
+      console.error("Mic error:", error);
+      alert("Please allow microphone access.");
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+    setIsRecording(false);
+  };
+
+  // 🤖 Send Audio to Backend
+  const sendToAI = async (audioBlob) => {
+    setIsProcessing(true);
+
+    try {
+      const base64Audio = await blobToBase64(audioBlob);
+
+      console.log("Sending audio to backend...");
+
+      const response = await fetch(`${API_BASE_URL}/api/voice_chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_input: userInput }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          audio: base64Audio,
+        }),
       });
 
-      const data = await res.json();
-
-      if (data.success && data.response) {
-        setHistory(prev => [
-          {
-            type: "assistant",
-            text: data.response,
-            timestamp: new Date().toLocaleTimeString(),
-          },
-          ...prev,
-        ]);
-
-        speakAndContinue(data.response);
-      } else {
-        setIsLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
       }
-    } catch {
-      setIsLoading(false);
+
+      const data = await response.json();
+      console.log("Backend response:", data);
+
+      if (!data.success) {
+        throw new Error(data.error || "Backend error");
+      }
+
+      setTranscription(data.transcription);
+      setAiResponse(data.response);
+      setIsProcessing(false);
+
+      speakResponse(data.response);
+
+    } catch (error) {
+      console.error("AI Error:", error);
+      setIsProcessing(false);
+      setAiResponse("Something went wrong.");
     }
   };
 
-  const startListening = () => {
-    if (!recognitionRef.current || listening) return;
-    try {
-      setCallActive(true);
-      setListening(true);
-      recognitionRef.current.start();
-    } catch {}
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
   };
 
-  const stopListening = () => {
-    setCallActive(false);
-    setListening(false);
-    setIsLoading(false);
-    recognitionRef.current?.stop();
+  // 🔊 Text To Speech
+  const speakResponse = (text) => {
     speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+
+    speechSynthesis.speak(utterance);
   };
 
-  const speak = (message) => {
-    const u = new SpeechSynthesisUtterance(message);
-    speechSynthesis.speak(u);
+  // ▶ Play / Pause
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+
+    setIsPlaying(!isPlaying);
   };
 
-  // 🔁 Infinite loop controller
-  const speakAndContinue = (message) => {
-    const u = new SpeechSynthesisUtterance(message);
-    u.rate = 0.9;
-
-    u.onend = () => {
-      setIsLoading(false);
-      if (callActive) {
-        setTimeout(startListening, 500);
-      }
-    };
-
-    speechSynthesis.speak(u);
+  const deleteRecording = () => {
+    setAudioURL(null);
+    setRecordTime(0);
+    setIsPlaying(false);
+    setAiResponse("");
+    setTranscription("");
+    speechSynthesis.cancel();
+    setIsSpeaking(false);
   };
-
-  const clearHistory = () => {
-    setHistory([]);
-    setTranscript("");
-  };
-
-  if (!isSupported) {
-    return <p>Speech Recognition not supported</p>;
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="max-w-4xl mx-auto p-6 py-12 text-center">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 flex items-center justify-center p-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
 
-        <h1 className="text-4xl font-bold mb-2">🎙️ Voice Assistant</h1>
-        <p className="text-gray-600 mb-8">Continuous voice conversation</p>
-
-        <div className="relative inline-block mb-6">
-          {isLoading && (
-            <>
-              <div className="absolute inset-0 w-32 h-32 rounded-full bg-indigo-400 wave-animation"></div>
-              <div className="absolute inset-0 w-32 h-32 rounded-full bg-indigo-300 wave-animation"></div>
-              <div className="absolute inset-0 w-32 h-32 rounded-full bg-indigo-200 wave-animation"></div>
-            </>
-          )}
-
-          <button
-            onClick={callActive ? stopListening : startListening}
-            className={`relative w-32 h-32 rounded-full flex items-center justify-center shadow-lg ${
-              callActive ? "bg-red-500" : "bg-green-600"
-            }`}
-          >
-            {callActive ? (
-              <MicOff className="w-12 h-12 text-white" />
-            ) : (
-              <Mic className="w-12 h-12 text-white" />
-            )}
-          </button>
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold">🎙 AI Voice Memo</h2>
         </div>
 
-        <p className="text-lg font-medium">
-          {!callActive
-            ? "Ready"
-            : listening
-            ? "🎤 Listening..."
-            : "🔊 Speaking..."}
-        </p>
+        <div className="text-3xl font-mono mb-6 text-center">
+          {formatTime(recordTime)}
+        </div>
 
-        {history.length > 0 && (
-          <div className="mt-10 bg-white p-6 rounded-xl shadow">
-            <div className="flex justify-between mb-4">
-              <h2 className="font-semibold">Conversation</h2>
-              <button onClick={clearHistory} className="text-red-500 text-sm">
-                Clear
-              </button>
-            </div>
+        <div className="mb-6 text-center">
+          {!isRecording ? (
+            <button
+              onClick={startRecording}
+              className="bg-green-600 text-white p-6 rounded-full shadow-lg"
+            >
+              <Mic size={30} />
+            </button>
+          ) : (
+            <button
+              onClick={stopRecording}
+              className="bg-red-600 text-white p-6 rounded-full animate-pulse"
+            >
+              <Square size={30} />
+            </button>
+          )}
+        </div>
 
-            {history.map((h, i) => (
-              <div key={i} className="mb-3 text-left">
-                <p className="text-xs text-gray-500">{h.type}</p>
-                <p>{h.text}</p>
-              </div>
-            ))}
+        {isProcessing && (
+          <div className="text-center text-indigo-600 mb-4">
+            <Sparkles className="inline animate-spin" size={18} /> Processing...
+          </div>
+        )}
+
+        {transcription && (
+          <div className="mb-4 text-sm text-gray-500">
+            <strong>You said:</strong> {transcription}
+          </div>
+        )}
+
+        {aiResponse && (
+          <div className="mb-4 bg-gray-50 p-3 rounded-lg">
+            <strong>AI:</strong> {aiResponse}
+          </div>
+        )}
+
+        {audioURL && (
+          <div className="flex justify-center gap-4">
+            <audio
+              ref={audioRef}
+              src={audioURL}
+              onEnded={() => setIsPlaying(false)}
+              hidden
+            />
+
+            <button
+              onClick={togglePlay}
+              className="bg-indigo-500 text-white p-3 rounded-full"
+            >
+              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+            </button>
+
+            <button
+              onClick={deleteRecording}
+              className="bg-gray-400 text-white p-3 rounded-full"
+            >
+              <Trash2 size={20} />
+            </button>
           </div>
         )}
 
