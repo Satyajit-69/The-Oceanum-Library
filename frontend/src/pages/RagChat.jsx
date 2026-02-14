@@ -50,7 +50,7 @@ export default function RagChat() {
       console.error('Chat error:', error);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: '❌ Error: Could not get a response. Please try again.'
+        content: '❌  Could not get a response. Please try again.'
       }]);
     } finally {
       setIsProcessing(false);
@@ -110,7 +110,7 @@ export default function RagChat() {
                   setPdfId(null);
                   setPdfName('');
                 }}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all font-medium"
+                className="px-4 py-2 text-sm bg-white hover:bg-gray-200 text-gray-700 rounded-lg transition-all font-medium"
               >
                 Change PDF
               </button>
