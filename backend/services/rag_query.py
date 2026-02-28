@@ -24,7 +24,7 @@ def answer_from_pdf(question: str, pdf_id: str) -> str:
 
     docs = vectordb.similarity_search(question, k=4)
     if not docs:
-        return "I don’t see relevant information in this document 🤔"
+        return "I don't see relevant information in this document 🤔"
 
     context = "\n\n".join(d.page_content for d in docs)
 
@@ -39,9 +39,17 @@ You are Lexa, a friendly AI assistant.
 
 Rules:
 - Answer ONLY from the provided document context
-- The Answer should be depending on the question  it can increase or decrease 
+- The Answer should be depending on the question it can increase or decrease 
 - If answer not found, say so politely
 - Be concise and clear
+
+IMPORTANT: Before giving your final answer, think step-by-step:
+1. What is the user really asking?
+2. What relevant information is in the context?
+3. How does this information answer the question?
+4. Is the information complete or are there gaps?
+
+Then provide your answer directly (no need to show your thinking process to the user).
 
 Context:
 {context}

@@ -27,17 +27,18 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-white backdrop-blur-xl shadow-lg border-b border-gray-200/50"
-            : "bg-white/80 backdrop-blur-md border-b border-gray-200/30"
-        }`}
-        style={{ fontFamily: "Montserrat"}}
-      >
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+     <nav
+  className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500`}
+  style={{ fontFamily: "Montserrat" }}
+>
+  <div
+    className={`mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${
+      scrolled
+        ? "max-w-6xl mt-3 bg-white/90 backdrop-blur-xl shadow-xl border border-gray-200/50 rounded-2xl"
+        : "w-full bg-white/80 backdrop-blur-md border-b border-gray-200/30"
+    }`}
+  >
+          <div className={`flex items-center justify-between h-20 $`}>
             {/* Logo with Enhanced Animation */}
             <Link
               to="/"
@@ -47,11 +48,11 @@ export default function Navbar() {
               <div className="relative">
                 {/* Glow Effect */}
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl blur-md opacity-0 group-hover:opacity-75 transition-opacity duration-500"></div>
-                
+
                 {/* Logo Container */}
                 <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Waves className="w-7 h-7 text-white animate-pulse" />
-                  
+
                   {/* Sparkle Effect */}
                   <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping" />
                 </div>
@@ -102,7 +103,6 @@ export default function Navbar() {
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-3">
-             
               {/* Primary Button */}
               <button
                 onClick={() => navigate("/about")}
@@ -110,10 +110,10 @@ export default function Navbar() {
               >
                 {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 group-hover:scale-110 transition-transform duration-500"></div>
-                
+
                 {/* Shimmer Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                
+
                 {/* Glow */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 blur-lg opacity-0 group-hover:opacity-75 transition-opacity duration-500"></div>
 
@@ -174,9 +174,9 @@ export default function Navbar() {
                   {isActive(link.path) && (
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-cyan-500 via-blue-600 to-purple-600 rounded-r-full"></div>
                   )}
-                  
+
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-50 via-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
+
                   <span className="relative z-10 flex items-center justify-between">
                     {link.name}
                     {isActive(link.path) && (
@@ -188,7 +188,6 @@ export default function Navbar() {
 
               {/* Mobile CTA Buttons */}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-200">
-
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
