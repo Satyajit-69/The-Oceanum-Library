@@ -27,17 +27,17 @@ export default function Navbar() {
 
   return (
     <>
-     <nav
-  className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500`}
-  style={{ fontFamily: "Montserrat" }}
->
-  <div
-    className={`mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${
-      scrolled
-        ? "max-w-6xl mt-3 bg-white/90 backdrop-blur-xl shadow-xl border border-gray-200/50 rounded-2xl"
-        : "w-full bg-white/80 backdrop-blur-md border-b border-gray-200/30"
-    }`}
-  >
+      <nav
+        className={`top-0 left-0 right-0 z-50 transition-all duration-500`}
+        style={{ fontFamily: "Montserrat" }}
+      >
+        <div
+          className={`mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${
+            scrolled
+              ? "max-w-6xl mt-3 bg-white/90 backdrop-blur-xl shadow-xl border border-gray-200/50 rounded-2xl"
+              : "w-full bg-white/80 backdrop-blur-md border-b border-gray-200/30"
+          }`}
+        >
           <div className={`flex items-center justify-between h-20 $`}>
             {/* Logo with Enhanced Animation */}
             <Link
