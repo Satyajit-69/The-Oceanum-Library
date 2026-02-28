@@ -8,14 +8,27 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const [showNavbar, setShowNavbar] = useState(true);
+const [lastScrollY, setLastScrollY] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY && currentScrollY > 80) {
+      // scrolling down
+      setShowNavbar(false);
+    } else {
+      // scrolling up
+      setShowNavbar(true);
+    }
+
+    setLastScrollY(currentScrollY);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [lastScrollY]);
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -27,10 +40,12 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        className={`top-0 left-0 right-0 z-50 transition-all duration-500`}
-        style={{ fontFamily: "Montserrat" }}
-      >
+     <nav
+  className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-500 ease-in-out ${
+    showNavbar ? "translate-y-0" : "-translate-y-full"
+  }`}
+  style={{ fontFamily: "Montserrat" }}
+>
         <div
           className={`mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${
             scrolled
