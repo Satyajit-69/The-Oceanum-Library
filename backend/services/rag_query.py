@@ -6,8 +6,7 @@ from langchain_google_genai import (
     ChatGoogleGenerativeAI,
     GoogleGenerativeAIEmbeddings
 )
-from langchain_community.vectorstores import Chroma
-
+from langchain_chroma import Chroma
 VECTOR_DB_DIR = "vector_db"
 
 embeddings = GoogleGenerativeAIEmbeddings(
