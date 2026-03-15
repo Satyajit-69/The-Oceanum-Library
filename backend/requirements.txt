@@ -8,6 +8,7 @@ google-genai
 langchain
 langchain-community
 langchain-core
+langchain-chroma
 langchain-google-genai
 langgraph
 pypdf 
