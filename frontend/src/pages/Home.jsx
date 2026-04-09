@@ -2,21 +2,21 @@ import FeatureCard from "../components/FeatureCard";
 
 export default function Home() {
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen relative overflow-hidden bg-black text-zinc-100">
       {/* Animated Grid Background */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:64px_64px]"></div>
       </div>
 
-      {/* Floating Orbs */}
+      {/* Floating Blobs (Greyscale) */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-pink-300/15 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-zinc-400/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-zinc-600/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-zinc-300/5 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      {/* Animated Wave Background */}
-      <div className="fixed inset-0 z-0 opacity-40">
+      {/* Animated Wave Background (Monochrome) */}
+      <div className="fixed inset-0 z-0 opacity-20">
         <svg
           width="100%"
           height="100%"
@@ -43,15 +43,15 @@ export default function Home() {
           </style>
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#60a5fa"></stop>
-              <stop offset="100%" stopColor="#a78bfa"></stop>
+              <stop offset="0%" stopColor="#ffffff"></stop>
+              <stop offset="100%" stopColor="#888888"></stop>
             </linearGradient>
           </defs>
           <path
             d="M 0,700 L 0,131 C 81.68,111.29 163.36,91.57 301,84 C 438.64,76.43 632.25,81 776,78 C 919.75,75 1013.64,64.43 1116,72 C 1218.36,79.57 1329.18,105.29 1440,131 L 1440,700 L 0,700 Z"
             stroke="none"
             fill="url(#gradient)"
-            fillOpacity="0.3"
+            fillOpacity="0.1"
             className="path-0"
           ></path>
         </svg>
@@ -63,53 +63,53 @@ export default function Home() {
         <div className="pt-20 pb-16 px-8">
           <div className="max-w-6xl mx-auto text-center space-y-6">
             {/* Animated Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-full text-gray-700 text-sm font-medium mb-6 shadow-lg animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-full text-zinc-300 text-sm font-medium mb-6 shadow-xl animate-fade-in">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-100"></span>
               </span>
               Now Live
             </div>
 
-            <h1 className="text-7xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 drop-shadow-lg leading-tight">
+            <h1 className="text-7xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500 drop-shadow-lg leading-tight tracking-tight">
               The Oceanum
             </h1>
 
-            <div className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent drop-shadow-sm">
+            <div className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-zinc-500 to-zinc-700 bg-clip-text text-transparent drop-shadow-sm tracking-tight">
               AI Library 🐬
             </div>
 
-            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
+            <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed font-light">
               Dive deep into the future of artificial intelligence
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 font-semibold">
+              <span className="text-white font-medium">
                 Empowering innovation with neural intelligence agents
               </span>
             </p>
 
             {/* Stats */}
             <div className="flex flex-wrap justify-center gap-8 pt-8">
-              <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-gray-200">
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="text-center bg-zinc-900/50 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-zinc-800/50 transition-all hover:bg-zinc-800/50">
+                <div className="text-4xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                   3+
                 </div>
-                <div className="text-sm text-gray-600 font-medium">
+                <div className="text-sm text-zinc-500 font-medium mt-1">
                   AI Features
                 </div>
               </div>
-              <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-gray-200">
-                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <div className="text-center bg-zinc-900/50 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-zinc-800/50 transition-all hover:bg-zinc-800/50">
+                <div className="text-4xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                   ∞
                 </div>
-                <div className="text-sm text-gray-600 font-medium">
+                <div className="text-sm text-zinc-500 font-medium mt-1">
                   Possibilities
                 </div>
               </div>
-              <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-gray-200">
-                <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent">
+              <div className="text-center bg-zinc-900/50 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-zinc-800/50 transition-all hover:bg-zinc-800/50">
+                <div className="text-4xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                   24/7
                 </div>
-                <div className="text-sm text-gray-600 font-medium">
+                <div className="text-sm text-zinc-500 font-medium mt-1">
                   Available
                 </div>
               </div>
@@ -171,24 +171,25 @@ export default function Home() {
 
         {/* CTA Section */}
         <div className="px-8 pb-20">
-          <div className="max-w-4xl mx-auto text-center space-y-6 bg-gradient-to-br from-white/80 to-blue-50/80 backdrop-blur-lg border border-gray-200 rounded-3xl p-12 shadow-2xl">
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <div className="max-w-4xl mx-auto text-center space-y-6 bg-zinc-900/60 backdrop-blur-lg border border-zinc-800 rounded-3xl p-12 shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/30 to-transparent pointer-events-none"></div>
+            <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent relative z-10 tracking-tight">
               Ready to dive in?
             </h2>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+            <p className="text-lg text-zinc-400 max-w-2xl mx-auto relative z-10">
               Join the future of AI-powered solutions and unlock unlimited
               potential
             </p>
-            <div className="flex flex-wrap gap-4 justify-center pt-4">
+            <div className="flex flex-wrap gap-4 justify-center pt-4 relative z-10">
               <a
                 href="/about"
-                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 shadow-xl hover:shadow-2xl"
+                className="px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]"
               >
                 Get Started Free
               </a>
               <a
                 href="/learnmore"
-                className="px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-300 text-gray-700 rounded-full font-semibold text-lg hover:bg-white transition-all duration-300 shadow-lg"
+                className="px-8 py-4 bg-zinc-900 backdrop-blur-sm border-2 border-zinc-700 text-zinc-300 rounded-full font-semibold text-lg hover:bg-zinc-800 hover:text-white transition-all duration-300 shadow-lg"
               >
                 Learn More
               </a>
