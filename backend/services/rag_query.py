@@ -10,7 +10,8 @@ from langchain_chroma import Chroma
 VECTOR_DB_DIR = "vector_db"
 
 embeddings = GoogleGenerativeAIEmbeddings(
-    model="gemini-embedding-001",
+    model="gemini-embedding-2", 
+    output_dimensionality=768,      
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
