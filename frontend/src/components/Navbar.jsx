@@ -1,247 +1,110 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Waves, ChevronDown, Sparkles } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, Waves } from "lucide-react";
+
+const links = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Models", path: "/models" },
+];
 
 export default function Navbar() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [showNavbar, setShowNavbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const { pathname } = useLocation();
+  const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
-        // scrolling down
-        setShowNavbar(false);
-      } else {
-        // scrolling up
-        setShowNavbar(true);
-      }
-
-      setLastScrollY(currentScrollY);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setHidden(y > lastY.current && y > 80);
+      lastY.current = y;
     };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Models", path: "/models" },
-  ];
-
-  const isActive = (path) => location.pathname === path;
+  const linkClass = (path) =>
+    `rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+      pathname === path
+        ? "bg-green-500 text-white"
+        : "text-zinc-400 hover:text-green-50"
+    }`;
 
   return (
-    <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-500 ease-in-out ${
-          showNavbar ? "translate-y-0" : "-translate-y-full"
-        }`}
-        style={{ fontFamily: "Montserrat" }}
-      >
+    <nav
+      className={`fixed inset-x-0 top-0 z-50 transition-transform duration-500 ${
+        hidden && !open ? "-translate-y-full" : "translate-y-0"
+      }`}
+      style={{ fontFamily: "Raleway, sans-serif" }}
+    >
+      <div className="mx-auto px-4 backdrop-blur-xl transition-all duration-500 sm:px-6">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link to="/" onClick={() => setOpen(false)} className="group flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-400 transition-transform duration-300 group-hover:scale-105">
+              <Waves className="h-5 w-5 text-black" />
+            </div>
+            <div className="leading-tight">
+              <div className="text-lg font-bold text-green-500">Oceanum</div>
+              <div className="text-[10px] font-medium tracking-widest text-zinc-500">AI LIBRARY</div>
+            </div>
+          </Link>
+
+          {/* Desktop links */}
+          <div className="hidden items-center gap-1 lg:flex">
+            {links.map((l) => (
+              <Link key={l.path} to={l.path} className={linkClass(l.path)}>
+                {l.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Desktop CTA */}
+          <Link
+            to="/about"
+            className="hidden rounded-lg bg-green-50 px-5 py-2 text-sm font-semibold text-black transition-all duration-300 hover:shadow-[0_0_20px_rgba(240,253,244,0.35)] lg:block"
+          >
+            Get Started
+          </Link>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+            className="rounded-lg p-2 text-green-50 transition-colors hover:bg-zinc-900 lg:hidden"
+          >
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+
+        {/* Mobile menu */}
         <div
-          className={`mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${
-            scrolled
-              ? "max-w-6xl mt-3 bg-black/90 backdrop-blur-xl shadow-2xl shadow-white/5 border border-zinc-800/50 rounded-2xl"
-              : "w-full bg-black/80 backdrop-blur-md border-b border-zinc-800/30"
+          className={`grid transition-all duration-300 lg:hidden ${
+            open ? "grid-rows-[1fr] pb-4 opacity-100" : "grid-rows-[0fr] opacity-0"
           }`}
         >
-          <div className="flex items-center justify-between h-20">
-            {/* Logo with Enhanced Animation */}
-            <Link
-              to="/"
-              className="flex items-center gap-3 group"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <div className="relative">
-                {/* Glow Effect */}
-                <div className="absolute inset-0 bg-white/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                {/* Logo Container */}
-                <div className="relative w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Waves className="w-7 h-7 text-black animate-pulse" />
-
-                  {/* Sparkle Effect */}
-                  <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping" />
-                </div>
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
-                  Oceanum
-                </span>
-                <span className="text-xs text-zinc-500 -mt-1 font-medium tracking-wider">
-                  AI LIBRARY
-                </span>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link, index) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`relative px-5 py-2.5 rounded-xl transition-all duration-300 group ${
-                    isActive(link.path)
-                      ? "text-black bg-white hover:text-black"
-                      : "text-zinc-400 hover:text-white font-medium"
-                  }`}
-                  style={{
-                    animation: `fade-slide-down 0.4s ease-out ${index * 0.1}s backwards`,
-                  }}
-                >
-                  {/* Hover Effect */}
-                  {!isActive(link.path) && (
-                    <div className="absolute inset-0 bg-zinc-900 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-                  )}
-
-                  <span className="relative z-10">{link.name}</span>
-
-                  {/* Hover Underline */}
-                  {!isActive(link.path) && (
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-white rounded-full group-hover:w-1/2 transition-all duration-300"></div>
-                  )}
-                </Link>
-              ))}
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="hidden lg:flex items-center gap-3">
-              {/* Primary Button */}
-              <button
-                onClick={() => navigate("/about")}
-                className="relative px-6 py-2.5 rounded-xl text-black bg-white font-semibold overflow-hidden group shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-shadow duration-300"
+          <div className="flex flex-col gap-1 overflow-hidden">
+            {links.map((l) => (
+              <Link
+                key={l.path}
+                to={l.path}
+                onClick={() => setOpen(false)}
+                className={`${linkClass(l.path)} py-3`}
               >
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-
-                <span className="relative z-10 flex items-center gap-2">
-                  Get Started
-                  <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-                </span>
-              </button>
-            </div>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              className="lg:hidden relative p-2.5 rounded-xl hover:bg-zinc-900 transition-colors duration-300 group"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                {l.name}
+              </Link>
+            ))}
+            <Link
+              to="/about"
+              onClick={() => setOpen(false)}
+              className="mt-2 rounded-lg bg-green-50 py-3 text-center text-sm font-semibold text-black"
             >
-              <div className="relative w-6 h-6">
-                <Menu
-                  className={`w-6 h-6 text-white absolute inset-0 transition-all duration-300 ${
-                    isMobileMenuOpen
-                      ? "opacity-0 rotate-90"
-                      : "opacity-100 rotate-0"
-                  }`}
-                />
-                <X
-                  className={`w-6 h-6 text-white absolute inset-0 transition-all duration-300 ${
-                    isMobileMenuOpen
-                      ? "opacity-100 rotate-0"
-                      : "opacity-0 -rotate-90"
-                  }`}
-                />
-              </div>
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          <div
-            className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-              isMobileMenuOpen
-                ? "max-h-[500px] opacity-100 pb-6"
-                : "max-h-0 opacity-0"
-            }`}
-          >
-            <div className="flex flex-col gap-2 pt-4">
-              {navLinks.map((link, index) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`relative px-5 py-4 rounded-xl transition-all duration-300 group overflow-hidden ${
-                    isActive(link.path)
-                      ? "bg-white text-black font-semibold shadow-md"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-white font-medium"
-                  }`}
-                  style={{
-                    animation: `slide-in-mobile 0.4s ease-out ${index * 0.1}s backwards`,
-                  }}
-                >
-                  {isActive(link.path) && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-black rounded-r-full"></div>
-                  )}
-
-                  <span className="relative z-10 flex items-center justify-between">
-                    {link.name}
-                  </span>
-                </Link>
-              ))}
-
-              {/* Mobile CTA Buttons */}
-              <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-zinc-800">
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    navigate("/about");
-                  }}
-                  className="relative px-5 py-4 rounded-xl text-black bg-white font-semibold overflow-hidden group shadow-lg"
-                  style={{
-                    animation: `slide-in-mobile 0.4s ease-out 0.4s backwards`,
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    Get Started
-                    <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-                  </span>
-                </button>
-              </div>
-            </div>
+              Get Started
+            </Link>
           </div>
         </div>
-      </nav>
-
-      {/* Spacer to prevent content jump */}
-      <div className="h-20 bg-black"></div>
-
-      {/* CSS Animations */}
-      <style>{`
-        @keyframes fade-slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes slide-in-mobile {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
-    </>
+      </div>
+    </nav>
   );
 }

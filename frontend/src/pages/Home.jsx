@@ -1,222 +1,292 @@
+import { useRef } from "react";
+import { Link } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import FeatureCard from "../components/FeatureCard";
 
-export default function Home() {
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+const STEPS = [
+  { n: "01", t: "Upload", d: "Drop in your documents. They are parsed, chunked and indexed in seconds." },
+  { n: "02", t: "Ask", d: "Chat with your library by text or voice, in your own words." },
+  { n: "03", t: "Understand", d: "Get answers with the reasoning visible, so you can trust the result." },
+];
+
+const TAGS = ["RAG", "Voice AI", "Semantic Search", "Code Agents", "Reasoning", "Documents", "Playground"];
+
+const FEATURES = [
+  {
+    title: "RAG Intelligence",
+    desc: "Upload your documents and chat with them using retrieval-augmented generation. Semantic search understands context and returns precise answers from your own library. Built for research, legal documents, technical manuals and knowledge management.",
+    route: "/rag",
+    imageUrl: "/innovation-animate.svg",
+  },
+  {
+    title: "Voice AI Assistant",
+    desc: "Natural, low-latency voice conversations powered by modern speech technology. Real-time transcription, multi-language support and hands-free workflows that adapt to the way you speak.",
+    route: "/voice-memo",
+    imageUrl: "/voice-chat-animate.svg",
+  },
+  {
+    title: "Upload Documents",
+    desc: "Drag and drop files up to 10MB with batch processing. Text is extracted, formatting preserved and content indexed for instant retrieval. Secure, encrypted storage keeps your documents private.",
+    route: "/upload",
+    imageUrl: "/upload-animate.svg",
+  },
+  {
+    title: "AI Playground",
+    desc: "A sandbox for experimenting with multiple AI models. Test, compare and fine-tune capabilities in real time, from language models to image generation and code completion, with no setup.",
+    route: "/playground",
+    imageUrl: "/playground.svg",
+  },
+  {
+    title: "CodePilot Agent",
+    desc: "A Cursor-style coding agent that turns natural language into real, structured code and files. It understands intent, generates complete implementations and writes files only with your explicit confirmation.",
+    route: "/codepilot",
+    imageUrl: "/code-agent-animate.svg",
+  },
+  {
+    title: "DeepThink Engine",
+    desc: "A transparent reasoning engine that works through problems step by step before answering. It validates logic and exposes its thinking, ideal for debugging, research and complex decisions.",
+    route: "/deepthink",
+    imageUrl: "/thinking-animate.svg",
+  },
+];
+
+function SectionHead({ eyebrow, title }) {
   return (
-    <div className="min-h-screen relative overflow-hidden bg-black text-zinc-100">
-      {/* Animated Grid Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+    <div className="reveal-up mb-12 text-center">
+      <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-zinc-500">{eyebrow}</p>
+      <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">{title}</h2>
+    </div>
+  );
+}
+
+export default function Home() {
+  const root = useRef(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        // Hero intro
+        gsap
+          .timeline({ defaults: { ease: "power4.out" } })
+          .from(".hero-mask > *", { yPercent: 110, duration: 1.1, stagger: 0.12 })
+          .from(".hero-fade", { opacity: 0, y: 20, duration: 0.8, stagger: 0.1 }, "-=0.6");
+
+        // Scroll progress bar
+        gsap.set(".progress", { scaleX: 0 });
+        gsap.to(".progress", {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: { start: 0, end: "max", scrub: 0.3 },
+        });
+
+        // Generic reveal on scroll
+        gsap.utils.toArray(".reveal-up").forEach((el) => {
+          gsap.from(el, {
+            opacity: 0,
+            y: 40,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+          });
+        });
+
+        // Staggered steps
+        gsap.set(".step", { opacity: 0, y: 40 });
+        ScrollTrigger.batch(".step", {
+          start: "top 88%",
+          once: true,
+          onEnter: (els) =>
+            gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" }),
+        });
+
+        // Count-up numbers
+        gsap.utils.toArray(".count").forEach((el) => {
+          const end = Number(el.dataset.count);
+          const obj = { v: 0 };
+          el.textContent = "0";
+          gsap.to(obj, {
+            v: end,
+            duration: 1.6,
+            ease: "power2.out",
+            onUpdate: () => (el.textContent = Math.round(obj.v)),
+            scrollTrigger: { trigger: el, start: "top 92%", once: true },
+          });
+        });
+
+        // Infinite marquee
+        gsap.to(".marquee", { xPercent: -50, duration: 30, ease: "none", repeat: -1 });
+
+        // Cursor spotlight (mouse devices only)
+        if (window.matchMedia("(pointer: fine)").matches) {
+          gsap.set(".spotlight", { xPercent: -50, yPercent: -50, x: innerWidth / 2, y: innerHeight / 3 });
+          const sx = gsap.quickTo(".spotlight", "x", { duration: 0.8, ease: "power3" });
+          const sy = gsap.quickTo(".spotlight", "y", { duration: 0.8, ease: "power3" });
+          const move = (e) => {
+            sx(e.clientX);
+            sy(e.clientY);
+          };
+          window.addEventListener("mousemove", move);
+          return () => window.removeEventListener("mousemove", move);
+        }
+      });
+
+      return () => mm.revert();
+    },
+    { scope: root }
+  );
+
+  return (
+    <div ref={root} className="relative min-h-screen overflow-hidden bg-black text-zinc-100">
+  
+      {/* Background: grid + spotlight */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:64px_64px]" />
+        <div className="spotlight absolute left-0 top-0 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.07),transparent_65%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,black_100%)]" />
       </div>
 
-      {/* Floating Blobs (Greyscale) */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-zinc-400/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-zinc-600/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-zinc-300/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-      </div>
-
-      {/* Animated Wave Background (Monochrome) */}
-      <div className="fixed inset-0 z-0 opacity-20">
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="0 0 1440 690"
-          xmlns="http://www.w3.org/2000/svg"
-          className="transition duration-300 ease-in-out"
-          preserveAspectRatio="none"
-          style={{ height: "100vh" }}
-        >
-          <style>
-            {`
-              @keyframes pathAnim-0 {
-                0%, 100% {
-                  d: path("M 0,700 L 0,131 C 81.68,111.29 163.36,91.57 301,84 C 438.64,76.43 632.25,81 776,78 C 919.75,75 1013.64,64.43 1116,72 C 1218.36,79.57 1329.18,105.29 1440,131 L 1440,700 L 0,700 Z");
-                }
-                50% {
-                  d: path("M 0,700 L 0,131 C 142.71,147.93 285.43,164.86 398,167 C 510.57,169.14 593,156.5 720,153 C 847,149.5 1018.57,155.14 1146,153 C 1273.43,150.86 1356.71,140.93 1440,131 L 1440,700 L 0,700 Z");
-                }
-              }
-              .path-0 {
-                animation: pathAnim-0 8s ease-in-out infinite;
-              }
-            `}
-          </style>
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff"></stop>
-              <stop offset="100%" stopColor="#888888"></stop>
-            </linearGradient>
-          </defs>
-          <path
-            d="M 0,700 L 0,131 C 81.68,111.29 163.36,91.57 301,84 C 438.64,76.43 632.25,81 776,78 C 919.75,75 1013.64,64.43 1116,72 C 1218.36,79.57 1329.18,105.29 1440,131 L 1440,700 L 0,700 Z"
-            stroke="none"
-            fill="url(#gradient)"
-            fillOpacity="0.1"
-            className="path-0"
-          ></path>
-        </svg>
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 min-h-screen">
-        {/* Hero Section */}
-        <div className="pt-20 pb-16 px-8">
-          <div className="max-w-6xl mx-auto text-center space-y-6">
-            {/* Animated Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-full text-zinc-300 text-sm font-medium mb-6 shadow-xl animate-fade-in">
+      <div className="relative z-10">
+        {/* Hero */}
+        <section className="px-6 pb-20 pt-28 text-center">
+          <div className="mx-auto max-w-4xl space-y-6">
+            <div className="hero-fade mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-2 text-sm font-medium text-zinc-300 backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-100"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-zinc-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-zinc-100" />
               </span>
               Now Live
             </div>
 
-            <h1 className="text-7xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500 drop-shadow-lg leading-tight tracking-tight">
-              The Oceanum
+            <h1 className="space-y-1">
+              <span className="hero-mask block overflow-hidden pb-2">
+                <span className="block bg-gradient-to-r from-white via-zinc-200 to-zinc-500 bg-clip-text text-6xl font-extrabold leading-tight tracking-tight text-transparent md:text-8xl">
+                  The Oceanum
+                </span>
+              </span>
+              <span className="hero-mask block overflow-hidden pb-2">
+                <span className="block text-5xl font-bold tracking-tight md:text-7xl">
+                  <span className="bg-gradient-to-r from-zinc-500 to-zinc-700 bg-clip-text text-transparent">
+                    AI Library
+                  </span>{" "}
+                  🐬
+                </span>
+              </span>
             </h1>
 
-            <div className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-zinc-500 to-zinc-700 bg-clip-text text-transparent drop-shadow-sm tracking-tight">
-              AI Library 🐬
-            </div>
-
-            <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed font-light">
-              Dive deep into the future of artificial intelligence
+            <p className="hero-fade mx-auto max-w-2xl text-lg font-light leading-relaxed text-zinc-400 md:text-xl">
+              Dive deep into the future of artificial intelligence.
               <br />
-              <span className="text-white font-medium">
-                Empowering innovation with neural intelligence agents
-              </span>
+              <span className="font-medium text-white">Empowering innovation with neural intelligence agents.</span>
             </p>
 
-            {/* Stats */}
-            <div className="flex flex-wrap justify-center gap-8 pt-8">
-              <div className="text-center bg-zinc-900/50 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-zinc-800/50 transition-all hover:bg-zinc-800/50">
-                <div className="text-4xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-                  3+
-                </div>
-                <div className="text-sm text-zinc-500 font-medium mt-1">
-                  AI Features
-                </div>
-              </div>
-              <div className="text-center bg-zinc-900/50 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-zinc-800/50 transition-all hover:bg-zinc-800/50">
-                <div className="text-4xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-                  ∞
-                </div>
-                <div className="text-sm text-zinc-500 font-medium mt-1">
-                  Possibilities
-                </div>
-              </div>
-              <div className="text-center bg-zinc-900/50 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-zinc-800/50 transition-all hover:bg-zinc-800/50">
-                <div className="text-4xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-                  24/7
-                </div>
-                <div className="text-sm text-zinc-500 font-medium mt-1">
-                  Available
-                </div>
-              </div>
+            <div className="hero-fade flex flex-wrap justify-center gap-4 pt-4">
+              <Link
+                to="/rag"
+                className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.35)]"
+              >
+                Get Started
+              </Link>
+              <a
+                href="#features"
+                className="rounded-full border border-zinc-700 px-7 py-3 text-sm font-semibold text-zinc-300 transition-colors duration-300 hover:border-zinc-500 hover:text-white"
+              >
+                Explore Features
+              </a>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Features Grid */}
-        <div className="px-8 pb-20">
-          <div className="grid gap-8 max-w-full mx-auto">
-            <FeatureCard
-              title="RAG Intelligence"
-              desc="Experience next-generation retrieval-augmented generation with quantum-enhanced semantic search capabilities. Upload your documents and chat with them using advanced AI. Our sophisticated natural language processing algorithms understand context and deliver precise answers from your document library. Perfect for research, legal documents, technical manuals, and knowledge management systems."
-              route="/rag"
-              imageUrl="/innovation-animate.svg"
-              layout="left"
-            />
-
-            <FeatureCard
-              title="Voice AI Assistant"
-              desc="Advanced conversational AI with emotion recognition and ultra-low latency voice processing. Natural voice interactions powered by cutting-edge speech technology. Our voice assistant understands context, responds naturally, and adapts to your speaking style. Features real-time transcription, multi-language support, and seamless integration with your workflow for hands-free productivity."
-              route="/voice-memo"
-              imageUrl="/voice-chat-animate.svg"
-              layout="right"
-            />
-
-            <FeatureCard
-              title="Upload Documents"
-              desc="Support for RTF files up to 10MB with our intuitive drag-and-drop interface. Easily upload and manage your documents with batch processing capabilities. Our intelligent file processing system extracts text, maintains formatting, and indexes content for instant retrieval. Process multiple files simultaneously for efficient workflow management. Secure cloud storage with encryption ensures your documents remain private and protected."
-              route="/upload"
-              imageUrl="/upload-animate.svg"
-              layout="left"
-            />
-
-            <FeatureCard
-              title="AI Playground"
-              desc="Experiment with multiple AI models in a sandbox environment. Test, compare, and fine-tune various AI capabilities in real-time with interactive controls and comprehensive testing tools. Our playground features state-of-the-art language models, image generation, code completion, and more. Perfect for developers, researchers, and AI enthusiasts who want to explore the cutting edge of artificial intelligence without complex setup."
-              route="/playground"
-              imageUrl="/playground.svg"
-              layout="right"
-            />
-            <FeatureCard
-              title="CodePilot Agent"
-              desc="An intelligent Cursor-style coding agent that converts natural language into real, structured code and files. CodePilot understands developer intent, generates complete implementations, and safely writes files with explicit user confirmation. Built for reliable AI-assisted development with full transparency and control."
-              route="/codepilot"
-              imageUrl="/code-agent-animate.svg"
-              layout="left"
-            />
-
-            <FeatureCard
-              title="DeepThink Engine"
-              desc="A transparent AI reasoning engine that analyzes problems step by step before responding. DeepThink validates logic, exposes structured thinking, and delivers accurate, explainable answers. Perfect for debugging, research, and complex decision-making where understanding the reasoning matters as much as the result."
-              route="/deepthink"
-              imageUrl="/thinking-animate.svg"
-              layout="right"
-            />
+        {/* Stats */}
+        <section className="reveal-up px-6 pb-20">
+          <div className="mx-auto grid max-w-3xl grid-cols-3 divide-x divide-zinc-800 border-y border-zinc-800 py-8 text-center">
+            {[
+              { v: <span className="count" data-count={FEATURES.length}>{FEATURES.length}</span>, l: "AI Features" },
+              { v: "24/7", l: "Available" },
+              { v: "∞", l: "Possibilities" },
+            ].map((s) => (
+              <div key={s.l}>
+                <div className="bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-4xl font-bold text-transparent">
+                  {s.v}
+                </div>
+                <div className="mt-1 text-sm text-zinc-500">{s.l}</div>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* CTA Section */}
-        <div className="px-8 pb-20">
-          <div className="max-w-4xl mx-auto text-center space-y-6 bg-zinc-900/60 backdrop-blur-lg border border-zinc-800 rounded-3xl p-12 shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/30 to-transparent pointer-events-none"></div>
-            <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent relative z-10 tracking-tight">
+        {/* Marquee */}
+        <section className="border-y border-zinc-900 py-5">
+          <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+            <div className="marquee flex w-max whitespace-nowrap">
+              {[...TAGS, ...TAGS, ...TAGS, ...TAGS].map((t, i) => (
+                <span key={i} className="px-6 text-sm uppercase tracking-[0.25em] text-zinc-600">
+                  {t} <span className="ml-12 text-zinc-800">/</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section id="features" className="px-6 py-24">
+          <SectionHead eyebrow="Features" title="Everything in one library" />
+          <div className="mx-auto grid max-w-5xl gap-6">
+            {FEATURES.map((f, i) => (
+              <FeatureCard key={f.route} {...f} layout={i % 2 === 0 ? "left" : "right"} />
+            ))}
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="px-6 pb-24">
+          <SectionHead eyebrow="How it works" title="Three simple steps" />
+          <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
+            {STEPS.map((s) => (
+              <div
+                key={s.n}
+                className="step rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 backdrop-blur-sm transition-colors duration-300 hover:border-zinc-600"
+              >
+                <div className="mb-4 text-sm font-medium text-zinc-600">{s.n}</div>
+                <h3 className="mb-2 text-xl font-semibold text-white">{s.t}</h3>
+                <p className="text-sm leading-relaxed text-zinc-400">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="px-6 pb-24">
+          <div className="reveal-up relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/60 p-12 text-center backdrop-blur-lg">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-zinc-800/30 to-transparent" />
+            <h2 className="relative bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent md:text-5xl">
               Ready to dive in?
             </h2>
-            <p className="text-lg text-zinc-400 max-w-2xl mx-auto relative z-10">
-              Join the future of AI-powered solutions and unlock unlimited
-              potential
+            <p className="relative mx-auto mt-4 max-w-xl text-zinc-400">
+              Join the future of AI-powered solutions and unlock unlimited potential.
             </p>
-            <div className="flex flex-wrap gap-4 justify-center pt-4 relative z-10">
-              <a
-                href="/about"
-                className="px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]"
+            <div className="relative mt-8 flex flex-wrap justify-center gap-4">
+              <Link
+                to="/about"
+                className="rounded-full bg-white px-8 py-3.5 font-semibold text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]"
               >
                 Get Started Free
-              </a>
-              <a
-                href="/learnmore"
-                className="px-8 py-4 bg-zinc-900 backdrop-blur-sm border-2 border-zinc-700 text-zinc-300 rounded-full font-semibold text-lg hover:bg-zinc-800 hover:text-white transition-all duration-300 shadow-lg"
+              </Link>
+              <Link
+                to="/learnmore"
+                className="rounded-full border border-zinc-700 bg-zinc-900 px-8 py-3.5 font-semibold text-zinc-300 transition-all duration-300 hover:bg-zinc-800 hover:text-white"
               >
                 Learn More
-              </a>
+              </Link>
             </div>
           </div>
-        </div>
-
-        {/* Footer */}
+        </section>
       </div>
-
-      <style>
-        {`
-          @keyframes fade-in {
-            from {
-              opacity: 0;
-              transform: translateY(-10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          .animate-fade-in {
-            animation: fade-in 1s ease-out;
-          }
-        `}
-      </style>
     </div>
   );
 }
