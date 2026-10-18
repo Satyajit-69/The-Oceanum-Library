@@ -1,52 +1,60 @@
+
 import os
 from dotenv import load_dotenv
-load_dotenv()
-
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
+
+load_dotenv()
 
 VECTOR_DB_DIR = "vector_db"
 
-def ingest_pdf(pdf_path: str, collection_name: str):
-    api_key = os.getenv("GOOGLE_API_KEY")
+
+def ingest_pdf(pdf_path: str, collection_name: str) -> bool:
+    api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        raise ValueError("GOOGLE_API_KEY missing")
+        raise ValueError("OPENAI_API_KEY missing")
 
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="gemini-embedding-001",
-        google_api_key=api_key
-    )
-
-    if not os.path.exists(pdf_path):
+    if not os.path.isfile(pdf_path):
         raise FileNotFoundError(f"PDF not found: {pdf_path}")
 
+    # 1. Initialize OpenAI embeddings
+    embeddings = OpenAIEmbeddings(
+        model="text-embedding-3-small",
+        api_key=api_key,
+    )
+
+    # 2. Load PDF
     loader = PyPDFLoader(pdf_path)
     docs = loader.load()
 
     if not docs:
-        raise ValueError("No text found in PDF")
+        raise ValueError("No pages found in PDF")
 
+    # 3. Split into chunks
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
-        chunk_overlap=200
+        chunk_overlap=200,
+        add_start_index=True,
     )
 
     chunks = splitter.split_documents(docs)
-    chunks = [c for c in chunks if c.page_content.strip()]
+    chunks = [chunk for chunk in chunks if chunk.page_content.strip()]
 
     if not chunks:
-        raise ValueError("All chunks empty after splitting")
+        raise ValueError("No text found in PDF")
 
+    print(f"Pages loaded: {len(docs)}")
+    print(f"Chunks created: {len(chunks)}")
+
+    # 4. Store in persistent Chroma database
     vectordb = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
         persist_directory=VECTOR_DB_DIR,
-        collection_name=collection_name
+        collection_name=collection_name,
     )
 
-    vectordb.persist()
-    print("✅ PDF ingested successfully")
-
+    print("PDF ingested successfully!")
     return True

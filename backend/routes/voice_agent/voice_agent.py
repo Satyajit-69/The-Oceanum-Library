@@ -1,89 +1,122 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
-from google import genai
+
 import os
+import base64
+import binascii
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
+from openai import OpenAI
 
 load_dotenv()
 
 router = APIRouter()
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise RuntimeError("OPENAI_API_KEY is not set")
+
+client = OpenAI(api_key=OPENAI_API_KEY)
+
 
 class AudioRequest(BaseModel):
-    audio: str  # base64 string
-    model: str = "gemini-2.5-flash"
-    temperature: float = 0.7
+    audio: str
+    temperature: float = Field(default=0.7, ge=0, le=2)
     system_prompt: str = "You are Lexa, a helpful AI assistant."
-    conversation_history: list = []
+    conversation_history: list[dict[str, str]] = Field(default_factory=list)
+
 
 @router.post("/voice_chat")
 async def voice_chat(request: AudioRequest):
     try:
-        # Build conversation context
-        contents = []
-        
-        # Add conversation history if available
-        for msg in request.conversation_history:
-            contents.append({
-                "role": msg.get("role", "user"),
-                "parts": [{"text": msg.get("content", "")}]
-            })
-        
-        # Add current audio input
-        contents.append({
+        # 1. Decode base64 audio
+        try:
+            audio_bytes = base64.b64decode(
+                request.audio,
+                validate=True,
+            )
+        except (binascii.Error, ValueError):
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid base64 audio",
+            )
+
+        if not audio_bytes:
+            raise HTTPException(
+                status_code=400,
+                detail="Audio is empty",
+            )
+
+        # 2. Transcribe audio with OpenAI
+        import io
+
+        audio_file = io.BytesIO(audio_bytes)
+        audio_file.name = "recording.webm"
+
+        transcription = client.audio.transcriptions.create(
+            model="gpt-4o-mini-transcribe",
+            file=audio_file,
+        )
+
+        user_text = transcription.text.strip()
+
+        if not user_text:
+            raise HTTPException(
+                status_code=400,
+                detail="Could not detect speech in the audio",
+            )
+
+        # 3. Build conversation messages
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    request.system_prompt
+                    + "\nRespond naturally and conversationally. "
+                    "Be concise for simple questions and detailed "
+                    "for complex ones. Ask for clarification if needed."
+                ),
+            }
+        ]
+
+        # Accept only supported conversation roles
+        for msg in request.conversation_history[-20:]:
+            role = msg.get("role")
+            content = msg.get("content", "")
+
+            if role in ("user", "assistant") and content.strip():
+                messages.append({
+                    "role": role,
+                    "content": content,
+                })
+
+        messages.append({
             "role": "user",
-            "parts": [
-                {
-                    "inline_data": {
-                        "mime_type": "audio/webm",
-                        "data": request.audio,
-                    }
-                }
-            ],
+            "content": user_text,
         })
 
-        response = client.models.generate_content(
-            model=request.model,
-            contents=contents,
-            config={
-                "system_instruction": f"""
-{request.system_prompt}
-
-THINKING PROCESS (Internal - before responding):
-1. What did the user say? (transcribe and understand the audio)
-2. What is the core question or request?
-3. Review the conversation history for context
-4. What information or action is needed to respond?
-5. How can I provide the most helpful and natural response?
-6. Should my response be brief or detailed based on the question?
-
-RESPONSE RULES:
-- Listen carefully to the user's voice input
-- Maintain conversation context from previous exchanges
-- Respond naturally and conversationally (this is voice chat)
-- Be concise for simple questions, detailed for complex ones
-- Be warm, friendly, and helpful
-- If you're unsure, ask for clarification
-
-Provide your response directly in a natural, conversational tone suitable for voice interaction.
-                """,
-                "temperature": request.temperature,
-            }
+        # 4. Generate the response
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=messages,
+            temperature=request.temperature,
         )
+
+        answer = response.choices[0].message.content or ""
 
         return {
             "success": True,
-            "response": response.text.strip(),
-            "transcription": "Audio processed",  # Gemini doesn't return transcription separately
-            "model_used": request.model
+            "response": answer.strip(),
+            "transcription": user_text,
+            "model_used": "gpt-4.1-mini",
+            "transcription_model": "gpt-4o-mini-transcribe",
         }
 
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
-
-
+    except HTTPException:
+        raise
+    except Exception:
+        # Log the exception privately on the server in production.
+        raise HTTPException(
+            status_code=500,
+            detail="Voice chat failed. Please try again.",
+        )

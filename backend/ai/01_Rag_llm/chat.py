@@ -1,77 +1,36 @@
+
 import os
 from dotenv import load_dotenv
+
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.vectorstores import InMemoryVectorStore
+
 load_dotenv()
 
-from google import genai
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_qdrant import QdrantVectorStore
-from qdrant_client import QdrantClient
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("OPENAI_API_KEY is missing from .env")
 
-# -----------------------------
-# GEMINI SETUP
-# -----------------------------
-client = genai.Client(
-    api_key=os.getenv("GOOGLE_API_KEY")
+embeddings = OpenAIEmbeddings(
+    model="text-embedding-3-small",
+    api_key=api_key,
 )
 
-model_name = "gemini-2.5-flash"
+texts = [
+    "LangChain is a framework for building context-aware applications.",
+    "Retrieval-Augmented Generation uses retrieved documents to ground LLM answers.",
+    "Vector databases store embeddings and enable semantic similarity search.",
+]
 
-# -----------------------------
-# QDRANT + EMBEDDINGS
-# -----------------------------
-embedder = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001"   # ✅ correct param
+vectorstore = InMemoryVectorStore.from_texts(
+    texts,
+    embedding=embeddings,
 )
 
-client_q = QdrantClient(url="http://localhost:6333")
+retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
 
-vector_store = QdrantVectorStore(
-    client=client_q,
-    collection_name="notes_2",
-    embedding=embedder
-)
+question = "What is RAG?"
+documents = retriever.invoke(question)
 
-# -----------------------------
-# RAG FUNCTION
-# -----------------------------
-def ask_question(query, k=3):
-    results = vector_store.similarity_search(query, k=k)
-
-    if not results:
-        return "No matching syllabus content found."
-
-    context = "\n".join(doc.page_content for doc in results)
-
-    prompt = f"""
-Use ONLY the below syllabus context to answer the question.
-If the answer is not found, say: "Not available in syllabus."
-
-Context:
-{context}
-
-Question: {query}
-
-Answer:
-"""
-
-    response = client.models.generate_content(
-        model=model_name,
-        contents=prompt
-    )
-
-    return response.text
-
-# -----------------------------
-# CHAT LOOP
-# -----------------------------
-print("📘 Syllabus Chatbot Ready!")
-print("Ask anything about your syllabus. Type 'exit' to quit.\n")
-
-while True:
-    q = input("You: ").strip()
-
-    if q.lower() in ["exit", "quit", "bye"]:
-        print("Bot: Goodbye! 👋")
-        break
-
-    print("\nBot:\n" + ask_question(q) + "\n" + "-"*60 + "\n")
+for document in documents:
+    print(document.page_content)

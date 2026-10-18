@@ -1,28 +1,33 @@
+
 import os
 from dotenv import load_dotenv
-from google import genai
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import SystemMessage, HumanMessage
 
 load_dotenv()
 
-# Fail fast (production-safe)
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GOOGLE_API_KEY:
-    raise RuntimeError("GOOGLE_API_KEY is not set")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise RuntimeError("OPENAI_API_KEY is not set")
 
-# Initialize client (once)
-client = genai.Client(api_key=GOOGLE_API_KEY)
+# Initialize the model once
+client = ChatOpenAI(
+    model="gpt-4.1-mini",
+    api_key=OPENAI_API_KEY,
+    temperature=0.7,
+)
 
-def gemini_agent(user_input: str) -> str:
-    prompt = f"""
-Your name is MEEKU. You are a voice agent developed by Satyajit Sahoo.
-Respond briefly, clearly, and politely.
+def meeku_agent(user_input: str) -> str:
+    messages = [
+        SystemMessage(
+            content=(
+                "Your name is MEEKU. You are a voice agent "
+                "developed by Satyajit Sahoo. "
+                "Respond briefly, clearly, and politely."
+            )
+        ),
+        HumanMessage(content=user_input),
+    ]
 
-User: {user_input}
-Assistant:
-"""
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-
-    return response.text.strip()
+    response = client.invoke(messages)
+    return response.content.strip()
