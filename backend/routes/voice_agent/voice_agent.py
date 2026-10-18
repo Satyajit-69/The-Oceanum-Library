@@ -73,6 +73,7 @@ async def voice_chat(request: AudioRequest):
                 "content": (
                     request.system_prompt
                     + "\nRespond naturally and conversationally. "
+                    "If the user want to talk you in Hindi you can answer the user in Hindi"
                     "Be concise for simple questions and detailed "
                     "for complex ones. Ask for clarification if needed."
                 ),
