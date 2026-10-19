@@ -142,26 +142,14 @@ export default function Home() {
   );
 
   return (
-    <div ref={root} className="relative min-h-screen overflow-hidden bg-black text-zinc-100">
+    <div ref={root} className="relative min-h-screen overflow-hidden bg-black text-zinc-100" style={{fontFamily:'"Quicksand", sans-serif;'}}>
   
-      {/* Background: grid + spotlight */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:64px_64px]" />
-        <div className="spotlight absolute left-0 top-0 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.07),transparent_65%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,black_100%)]" />
-      </div>
-
+    
       <div className="relative z-10">
         {/* Hero */}
         <section className="px-6 pb-20 pt-28 text-center">
           <div className="mx-auto max-w-4xl space-y-6">
-            <div className="hero-fade mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-2 text-sm font-medium text-zinc-300 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-zinc-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-zinc-100" />
-              </span>
-              Now Live
-            </div>
+         
 
             <h1 className="space-y-1">
               <span className="hero-mask block overflow-hidden pb-2">
