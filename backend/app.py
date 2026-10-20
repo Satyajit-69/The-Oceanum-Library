@@ -6,7 +6,7 @@ from routes.rag.chat import router as chat_router
 
 app = FastAPI()
 
-# ✅ CORS (for frontend localhost)
+# cors
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,7 +16,7 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# ✅ Routers
+#  Routers
 app.include_router(upload_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
 app.include_router(voice_router,prefix="/api")
