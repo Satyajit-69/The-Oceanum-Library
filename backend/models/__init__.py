@@ -48,8 +48,11 @@ class User(Base) :
 
     updated_at : Mapped[datetime] = mapped_column(
         TIMESTAMP ,
-        server_default = text ("CURRENT_TIMESTAMP")
+        server_default = text ("CURRENT_TIMESTAMP"),
         onupdate = func.current_timestamp()
     )
 
 
+
+
+from .auth_account import AuthAccount
